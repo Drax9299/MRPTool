@@ -229,7 +229,7 @@ def stock_analysis_func(request):
 
         d = zip(dat,f)
         return render(request,"stock_analysis.html",{"puname":p_uname,"prname":p_realname,"tdata":d})
-        
+
     return render(request,"stock_analysis.html",{"puname":p_uname,"prname":p_realname})
 
 def demand_prediction_func(request):
@@ -442,3 +442,9 @@ def inventory_status_func(request):
 
         return render(request,'inventory_status.html',{"max_quantity":ans,"tdata":dat})
     return render(request,'inventory_status.html',{"max_quantity":ans,"tdata":dat})
+
+def create_job_func(request):
+    return render(request,'create_job.html')
+
+def actual_create_job_func(request):
+    return render(request,'actual_create_job.html')

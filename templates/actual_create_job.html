@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Stock Analysis</title>
+  <title>Dashboard</title>
 
   {% load static %}
   <!-- Custom fonts for this template-->
@@ -30,7 +30,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard' puname %}">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -42,7 +42,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="">
+        <a class="nav-link" href="{% url 'stock-analysis' %}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Stock Analysis</span></a>
       </li>
@@ -54,7 +54,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="{% url 'demand-prediction' %}">Demand</a>
-            <a class="collapse-item" href="{% url 'price-prediction' %}">Price</a>
+              <a class="collapse-item" href="">Price</a>
           </div>
         </div>
       </li>
@@ -129,7 +129,7 @@
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 ">{{prname}}</span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 ">{{msg}}</span>
 
               </a>
               <!-- Dropdown - User Information -->
@@ -161,114 +161,73 @@
 
         <!-- Begin Page Content -->
         <div class="container-fluid">
+
           <br>
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Stock Requirement Analysis</h1>
+            <h1 class="h3 mb-0 text-gray-800">Create Job</h1>
           </div>
 
           <div class="card shadow mb-4">
             <div class="card-body">
+              Its Working!
 
-              <form class="form-inline" method="post">
-                {% csrf_token %}
-                <div class="form-group mb-2">
-                  <label class="text-gray-900">Number of Products :</label>
-                </div>
-                <div class="form-group mx-sm-3 mb-2">
-                  <input type="text" class="form-control" name="demand_value" >
-                </div>
-                <button type="submit" class="btn btn-primary mb-2">Calculate</button>
-              </form>
-              <br>
-              {% if tdata %}
-              <table class="table table-borderless h4">
-                <thead>
-                  <tr>
-                    <th scope="col" class="text-gray-900">Id</th>
-                    <th scope="col" class="text-gray-900">Attribute Name</th>
-                    <th scope="col" class="text-gray-900">Required</th>
-                    <th scope="col" class="text-gray-900">Current</th>
-                    <th scope="col" class="text-gray-900">Shortage</th>
-                  </tr>
-                </thead>
-                <tbody>
-
-                  {% for i,j in tdata %}
-                  <tr>
-                    <td scope="col" class="text-dark">{{i.attribute_id}}</td>
-                    <td scope="col" class="text-dark">{{i.attribute_name}}</td>
-                    <td scope="col" class="text-dark">{{i.attribute_required_quantity}}</td>
-                    <td scope="col" class="text-dark">{{i.attribute_current_quantity}}</td>
-                    {% if j >= 0 %}
-                    <td scope="col" class="text-success">{{j}}</td>
-                    {% else %}
-                    <td scope="col" class="text-danger">{{j}}</td>
-                    {% endif %}
-                  </tr>
-
-                  {% endfor %}
-
-
-                </tbody>
-              </table>
-              {% endif %}
             </div>
           </div>
 
-        </div>
-        <!-- End of Main Content -->
-
-        <!-- Footer -->
-
-        <!-- End of Footer -->
-
       </div>
-      <!-- End of Content Wrapper -->
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+
+      <!-- End of Footer -->
 
     </div>
-    <!-- End of Page Wrapper -->
+    <!-- End of Content Wrapper -->
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-      <i class="fas fa-angle-up"></i>
-    </a>
+  </div>
+  <!-- End of Page Wrapper -->
 
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-          <div class="modal-footer">
-            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-            <a class="btn btn-primary" href="login.html">Logout</a>
-          </div>
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Logout Modal-->
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="login.html">Logout</a>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Bootstrap core JavaScript-->
-    {% load staticfiles %}
-    <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+  <!-- Bootstrap core JavaScript-->
+  {% load staticfiles %}
+  <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+  <!-- Core plugin JavaScript-->
+  <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
 
-    <!-- Custom scripts for all pages-->
-    <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
+  <!-- Custom scripts for all pages-->
+  <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
 
-    <!-- Page level plugins -->
-    <script src="{% static 'vendor/chart.js/Chart.min.js'%}'"></script>
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/chart.js/Chart.min.js'%}'"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>
-    <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>
+  <!-- Page level custom scripts -->
+  <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>
+  <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>
 
 
 </body>

@@ -33,5 +33,7 @@ urlpatterns = [
     path('demand_prediction/',views.demand_prediction_func,name='demand-prediction'),
     path('price_prediction/',views.price_prediction_func,name='price-prediction'),
     path('add_sales_data/',views.add_sales_data_func,name='add-sales-data'),
-    path('inventory_status',views.inventory_status_func,name='inventory-status')
+    path('inventory_status/',views.inventory_status_func,name='inventory-status'),
+    path('create_job/',views.create_job_func,name='create-job'),
+    path('actual_create_job/',views.actual_create_job_func,name='actual-create-job')
 ]
