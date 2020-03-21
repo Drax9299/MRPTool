@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Admin Login</title>
+  {% load static %}
+  <!-- Custom fonts for this template-->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+
+</head>
+
+<body class="bg-gradient-primary">
+
+  <div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-5">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <!-- <div class="col-lg-6 d-none d-lg-block bg-login-image"></div> -->
+              <div class="col-lg-12">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h5 class="h5 text-gray-900 mb-4">Create a Product</h5>
+                  </div>
+                  <form  method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label for="" class="text-gray-900">Product Username</label>
+                      <input type="text" class="form-control form-control-user" name="product_username" aria-describedby="emailHelp" placeholder="Enter Product Username ">
+                    </div>
+                    <div class="form-group">
+                      <label class="text-gray-900">Product Real Name</label>
+                      <input type="text" class="form-control form-control-user" name="product_realname" aria-describedby="emailHelp" placeholder="Enter Product Real Name">
+                    </div>
+                    <div class="form-group">
+                      <label class="text-gray-900">Product Description</label>
+                      <input type="text" class="form-control form-control-user" name="product_description" aria-describedby="emailHelp" placeholder="Enter Product Description">
+                    </div>
+                    <div class="form-group" id="groupofboxes">
+                      <label class="text-gray-900">Attributes Details </label>
+                      <div class="form-row" id="row1">
+                        <label class="text-success col-form-label">1</label>
+                        <div class="col-5">
+                          <input type="text" class=" form-control form-control-user" name="attr1_name" placeholder="Attribute Name">
+                        </div>
+                        <div class="col">
+                          <input type="text" class=" form-control form-control-user" name="attr1_rquantity" placeholder="Required Quantity">
+                        </div>
+                        <div class="col">
+                          <input type="text" class=" form-control form-control-user" name="attr1_cquantity" placeholder="Current Quantity">
+                        </div>
+                      </div>
+                    </div>
+
+                      <input type="button" id="addbutton" class="btn btn-success float-right" value="Add More">
+                      <input type="button" id="delbutton" class="btn btn-danger float-right" value="Delete">
+                    <br><br><hr>
+                      <button type="submit"  class="btn btn-primary float-left">Create Product</button>
+
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  {% load staticfiles %}
+  <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+  <script type="{% static 'jquery-3.3.1.min.js' %}">
+
+  </script>
+  <!-- Custom code for appending-->
+  <script type="text/javascript">
+
+    $(document).ready(function() {
+      var counter = 2;
+
+      $("#addbutton").click(function(){
+
+        var newTextBoxDiv = $(document.createElement('div')).attr("id",'row'+counter);
+        newTextBoxDiv.addClass("form-row");
+
+        var text = 'hello';
+
+        newTextBoxDiv.after().html('<label class="text-success col-form-label">'+counter+'</label>');
+        var divofattrn = $(document.createElement('div'));
+        divofattrn.addClass("col-5");
+        divofattrn.after().html('<input type="text" class=" form-control form-control-user" name="attr'+counter+'_name" placeholder="Attribute Name">');
+        divofattrn.appendTo(newTextBoxDiv);
+
+        var divofattrn = $(document.createElement('div'));
+        divofattrn.addClass("col");
+        divofattrn.after().html('<input type="text" class=" form-control form-control-user" name="attr'+counter+'_rquantity" placeholder="Required Quantity">');
+        divofattrn.appendTo(newTextBoxDiv);
+
+        var divofattrn = $(document.createElement('div'));
+        divofattrn.addClass("col");
+        divofattrn.after().html('<input type="text" class=" form-control form-control-user" name="attr'+counter+'_cquantity" placeholder="Current Quantity">');
+        divofattrn.appendTo(newTextBoxDiv);
+
+        newTextBoxDiv.appendTo("#groupofboxes");
+        // $("<label>Hello</label>").appendTo("#groupofboxes")
+        counter++;
+      });
+
+      $("#delbutton").click(function(){
+        if(counter==2){
+          alert("No more fields to remove");
+          return false;
+        }
+        counter--;
+        $("#row"+counter).remove();
+      });
+
+    });
+
+  </script>
+
+</body>
+
+</html>
