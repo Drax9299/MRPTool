@@ -229,8 +229,7 @@ def stock_analysis_func(request):
 
         d = zip(dat,f)
         return render(request,"stock_analysis.html",{"puname":p_uname,"prname":p_realname,"tdata":d})
-
-
+        
     return render(request,"stock_analysis.html",{"puname":p_uname,"prname":p_realname})
 
 def demand_prediction_func(request):
