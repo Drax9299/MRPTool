@@ -421,7 +421,6 @@ def inventory_status_func(request):
                 tempdata.attribute_current_quantity = n
                 tempdata.save()
         #NORMAL Method
-
         # get data
         dat = attribute_product.objects.filter(company_username = c_name,product_username = p_uname).order_by('attribute_id')
 
