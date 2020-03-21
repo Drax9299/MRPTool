@@ -164,79 +164,33 @@
 
           <br>
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Create Job</h1>
+            <h1 class="h3 mb-0 text-gray-800">Job Details</h1>
           </div>
+
 
           <div class="card shadow mb-4">
             <div class="card-body">
-              {% if messages %}
-              {% for message in messages %}
-              {% if message.tags == 'error' %}
-              <div id="alert_success" class="alert alert-danger" role="alert">
-                {{message}}
-              </div>
-              {% else %}
-              <div id="alert_success" class="alert alert-success" role="alert">
-                {{message}}
-              </div>
-              {% endif %}
-              {% endfor %}
-              {% endif %}
-              <form method="post">
-                {% csrf_token %}
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <label for="jid">Job ID</label>
-                    <input type="text" class="form-control" name="jid"  >
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group col-md-12">
-                    <label for="jd">Job Description</label>
-                    <input type="text" class="form-control" name="jd"  >
-                  </div>
-                </div>
-
-                <div class="form-row">
-
-                  <div class="form-group col-md-6"><label >Selct attributes : </label>
-                    <table class="table table-borderless h4">
-                      <thead>
-                        <tr>
-                          <th scope="col" class="text-gray-900">Id</th>
-                          <th scope="col" class="text-gray-900">Attribute Name</th>
-                          <th scope="col" class="text-gray-900">Required</th>
-                          <th scope="col" class="text-gray-900">Include</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          {% for i in tdata %}
-                          <tr>
-                            <td scope="col" class="text-dark">{{i.attribute_id}}</td>
-                            <td scope="col" class="text-dark">{{i.attribute_name}}</td>
-                            <td scope="col" class="text-dark">{{i.attribute_required_quantity}}</td>
-                            <td scope="col" class="text-dark">
-                              <input type="checkbox" class="form-control" value="{{i.attribute_id}}" name="{{i.attribute_id}}">
-                            </td>
-                          </tr>
-                          {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
-
-                </div>
-
-
-
-                  <br>
-
-                <div class="text-center">
-                  <button type="submit" class="btn btn-primary">Save Data</button>
-                </div>
-
-              </form>
+              <h3 class="text-gray-900">Job id : {{jid}}</h3>
+              <br>
+              <h3 class="text-gray-900">Job Description : </h3>
+              <h3>{{jdesc}}</h3>
+              <table class="table table-borderless h4">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-gray-900">Attribute Id</th>
+                    <th scope="col" class="text-gray-900">Attribute Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {% for i in tdata %}
+                    <tr>
+                      <td scope="col" class="text-dark">{{i.attribute_id}}</td>
+                      <td scope="col" class="text-dark">{{i.attribute_name}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
 
             </div>
           </div>

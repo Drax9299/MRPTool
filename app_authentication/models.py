@@ -61,3 +61,23 @@ class history_sales_data(models.Model):
 
     class Meta:
         db_table = 'history_sales_data'
+
+class all_jobs(models.Model):
+    company_username = models.CharField(max_length = 20)
+    product_username = models.CharField(max_length = 20)
+    job_id = models.CharField(max_length = 20)
+    job_desc = models.CharField(max_length = 100)
+
+    class Meta:
+        db_table  = 'all_jobs'
+
+class job_detail(models.Model):
+    company_username = models.CharField(max_length = 20)
+    product_username = models.CharField(max_length = 20)
+    job_id = models.CharField(max_length = 20)
+    attribute_id = models.SmallIntegerField()
+    attribute_name = models.CharField(max_length = 40)
+    attribute_required_quantity = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'job_detail'

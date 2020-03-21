@@ -173,6 +173,29 @@
 
             </div>
           </div>
+          <div class="card shadow mb-4">
+            <div class="card-body">
+
+              <table class="table  h4">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-gray-900">Job Id</th>
+                    <th scope="col" class="text-gray-900">Job disc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {% for i in tdata %}
+                    <tr>
+                      <td scope="col" class="text-dark"><a href="{% url 'show-job' i.job_id %}">{{i.job_id}}</a></td>
+                      <td scope="col" class="text-dark">{{i.job_desc}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
 
       </div>
       <!-- End of Main Content -->

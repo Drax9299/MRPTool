@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
-from . models import company_detail,admin_detail,worker_detail,product_detail,attribute_product,history_sales_data
+from . models import company_detail,admin_detail,worker_detail,product_detail,attribute_product,history_sales_data,job_detail,all_jobs
+
 from django.contrib import messages
 import pickle
 import numpy as n
@@ -444,7 +445,70 @@ def inventory_status_func(request):
     return render(request,'inventory_status.html',{"max_quantity":ans,"tdata":dat})
 
 def create_job_func(request):
-    return render(request,'create_job.html')
+    p_uname = request.session['productuname']
+    c_name = request.session['companyuser']
+    dat = all_jobs.objects.filter(company_username = c_name,product_username = p_uname).order_by('job_id')
+    return render(request,'create_job.html',{"tdata":dat})
 
 def actual_create_job_func(request):
-    return render(request,'actual_create_job.html')
+    p_uname = request.session['productuname']
+    c_name = request.session['companyuser']
+    dat = attribute_product.objects.filter(company_username = c_name,product_username = p_uname).order_by('attribute_id')
+    if request.method == "POST":
+        last = dat.last()
+        last_id = last.attribute_id
+
+        #Get DATA from post
+        jobid = request.POST['jid'].strip()
+        jdesc = request.POST['jd'].strip()
+        l = []
+        for i in range(1,last_id+1):
+            index = str(i)
+            a = request.POST.get(index,0)
+            if a != 0 :
+                l.append(int(a))
+
+        #error checking
+        if not jobid:
+            messages.error(request,"Provide valid jobid")
+            return render(request,'actual_create_job.html',{"tdata":dat})
+        if not l:
+            messages.error(request,"Atleast select 1 attribute")
+            return render(request,'actual_create_job.html',{"tdata":dat})
+
+        #save to database
+        if all_jobs.objects.filter(job_id = jobid,product_username = p_uname):
+            messages.error(request,"Job ID already Exists")
+            return render(request,'actual_create_job.html',{"tdata":dat})
+
+        #SAVE IN ALL_JOBS TABLE
+        c = all_jobs()
+        c.company_username = c_name
+        c.product_username = p_uname
+        c.job_id = jobid
+        c.job_desc = jdesc
+        c.save()
+
+        #Save attributes in job_detail
+        for i in l:
+            o = job_detail()
+            o.company_username = c_name
+            o.product_username = p_uname
+            o.job_id = jobid
+            o.attribute_id = i
+            aname = dat.get(attribute_id = i)
+            o.attribute_name = aname.attribute_name
+            o.attribute_required_quantity = aname.attribute_required_quantity
+            o.save()
+
+        messages.success(request,"Job Created Successfully")
+        return render(request,'actual_create_job.html',{"tdata":dat})
+    return render(request,'actual_create_job.html',{"tdata":dat})
+
+def show_job_func(request , _jid):
+    p_uname = request.session['productuname']
+    c_name = request.session['companyuser']
+    dat = job_detail.objects.filter(company_username = c_name,product_username = p_uname,job_id=_jid).order_by('attribute_id')
+    dat1 = all_jobs.objects.get(company_username = c_name,product_username = p_uname,job_id=_jid)
+    jdesc = dat1.job_desc
+    return render(request,"show_job.html",{"tdata":dat,"jid":_jid,"jdesc":jdesc})
