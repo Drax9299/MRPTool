@@ -54,7 +54,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="{% url 'demand-prediction' %}">Demand</a>
-              <a class="collapse-item" href="{% url 'price-prediction' %}">Price</a>
+              <a class="collapse-item" href="">Price</a>
           </div>
         </div>
       </li>
@@ -78,7 +78,6 @@
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Assign Job</span></a>
       </li>
-
 
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -167,7 +166,35 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+          <br>
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Assign Job</h1>
+          </div>
 
+
+          <div class="card shadow mb-4">
+            <div class="card-body">
+
+              <table class="table  h4">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-gray-900">Job Id</th>
+                    <th scope="col" class="text-gray-900">Job disc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {% for i in tdata %}
+                    <tr>
+                      <td scope="col" class="text-dark"><a href="{% url 'actual-assign-job' i.job_id %}">{{i.job_id}}</a></td>
+                      <td scope="col" class="text-dark">{{i.job_desc}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
 
       </div>
       <!-- End of Main Content -->

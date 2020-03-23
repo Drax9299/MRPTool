@@ -36,5 +36,7 @@ urlpatterns = [
     path('inventory_status/',views.inventory_status_func,name='inventory-status'),
     path('create_job/',views.create_job_func,name='create-job'),
     path('actual_create_job/',views.actual_create_job_func,name='actual-create-job'),
-    path('show_job/<str:_jid>/',views.show_job_func,name='show-job')
+    path('show_job/<str:_jid>/',views.show_job_func,name='show-job'),
+    path('assign_job/',views.assign_job_func,name='assign-job'),
+    path('actual_assign_job/<str:_jid>/',views.actual_assign_job_func,name = 'actual-assign-job')
 ]

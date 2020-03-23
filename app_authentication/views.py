@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
-from . models import company_detail,admin_detail,worker_detail,product_detail,attribute_product,history_sales_data,job_detail,all_jobs
-
+from . models import company_detail,admin_detail,worker_detail,product_detail,attribute_product,history_sales_data,job_detail,all_jobs,job_assign
+from datetime import datetime
 from django.contrib import messages
 import pickle
 import numpy as n
@@ -141,13 +141,14 @@ def worker_login_func(request):
 
 def worker_register_func(request):
     message = ""
+    c_name = request.session['companyuser']
     if request.method == 'POST':
         uname = request.POST['worker_username']
         fname = request.POST['worker_fullname']
         password1 = request.POST['ps1']
         password2 = request.POST['ps2']
         c = worker_detail()
-        if worker_detail.objects.filter(worker_username = uname) :
+        if worker_detail.objects.filter(worker_username = uname,company_username = c_name) :
             print("exist")
             message = "Exist"
             messages.error(request,"Worker Already Registered")
@@ -512,3 +513,78 @@ def show_job_func(request , _jid):
     dat1 = all_jobs.objects.get(company_username = c_name,product_username = p_uname,job_id=_jid)
     jdesc = dat1.job_desc
     return render(request,"show_job.html",{"tdata":dat,"jid":_jid,"jdesc":jdesc})
+
+def assign_job_func(request):
+    p_uname = request.session['productuname']
+    c_name = request.session['companyuser']
+    dat = all_jobs.objects.filter(company_username = c_name,product_username = p_uname).order_by('job_id')
+    return render(request,'assign_job.html',{"tdata":dat})
+
+def actual_assign_job_func(request, _jid):
+    p_uname = request.session['productuname']
+    c_name = request.session['companyuser']
+    dat1 = all_jobs.objects.get(company_username = c_name,product_username = p_uname,job_id=_jid)
+    jdesc = dat1.job_desc
+    #Get worker
+    awdata = job_assign.objects.filter(company_username = c_name).only('worker_username')
+    #wdata = worker_detail.objects.filter(company_username = c_name).order_by('worker_realname').only("worker_username","worker_realname")
+    aw = []
+    for i in awdata:
+        aw.append(i.worker_username)
+        print(i.worker_username)
+    wdata = worker_detail.objects.exclude(worker_username__in = aw).only("worker_username","worker_realname","company_username")
+    wdata = wdata.filter(company_username = c_name)
+    nworker = wdata.count()
+    l = []
+    for i in range(1,nworker+1):
+        l.append(i)
+
+    wdata1 = zip(wdata,l)
+    wdata2 = wdata1
+
+    if request.method == "POST":
+        numberofjobs = request.POST['njobs'].strip()
+        if numberofjobs == "" or numberofjobs.isdigit() == False:
+            messages.error(request,"Invalid Number of jobs")
+            return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
+        numberofjobs = int(numberofjobs)
+        if numberofjobs <=0 :
+            messages.error(request,"Invalid Number of jobs")
+            return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
+        instruction = request.POST['instruction'].strip()
+        itime = request.POST['se_time'].strip()
+        a = itime.split("-")
+        sdates = a[0].strip()
+        edates = a[1].strip()
+        sdate = datetime.strptime(sdates,'%d/%m/%Y %I:%M %p')
+        edate = datetime.strptime(edates,'%d/%m/%Y %I:%M %p')
+
+        workerslist = []
+        arb = zip(wdata,l)
+        for i,j in arb:
+            k = str(j)
+            temp =request.POST.get(k,0)
+            if k == temp:
+                workerslist.append(i.worker_username)
+        print(workerslist)
+
+        for i in workerslist:
+            o = job_assign()
+            o.company_username = c_name
+            o.product_username = p_uname
+            o.job_id = _jid
+            o.worker_username = i
+            o.e_start_time = sdate
+            o.e_end_time = edate
+            o.a_start_time = sdate
+            o.a_end_time = edate
+            o.number_jobs = numberofjobs
+            o.numer_jobs_done = 0
+            o.instruction = instruction
+            o.save()
+
+
+        messages.success(request,"Job Assigned Successfully")
+        return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
+
+    return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})

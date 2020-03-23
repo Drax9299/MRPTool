@@ -81,3 +81,19 @@ class job_detail(models.Model):
 
     class Meta:
         db_table = 'job_detail'
+
+class job_assign(models.Model):
+    company_username = models.CharField(max_length = 20)
+    product_username = models.CharField(max_length = 20)
+    job_id = models.CharField(max_length = 20)
+    worker_username = models.CharField(max_length=20)
+    e_start_time = models.DateTimeField()
+    e_end_time = models.DateTimeField()
+    a_start_time = models.DateTimeField()
+    a_end_time = models.DateTimeField()
+    number_jobs = models.SmallIntegerField()
+    numer_jobs_done = models.SmallIntegerField()
+    instruction = models.CharField(max_length = 50)
+
+    class Meta:
+        db_table = 'job_assign'

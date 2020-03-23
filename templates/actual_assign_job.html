@@ -18,6 +18,7 @@
 
   <!-- Custom styles for this template-->
   <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="{% static 'daterangepicker.css' %}" rel="stylesheet">
 
 </head>
 
@@ -54,7 +55,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="{% url 'demand-prediction' %}">Demand</a>
-              <a class="collapse-item" href="{% url 'price-prediction' %}">Price</a>
+              <a class="collapse-item" href="">Price</a>
           </div>
         </div>
       </li>
@@ -78,7 +79,6 @@
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Assign Job</span></a>
       </li>
-
 
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -167,7 +167,97 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+          <br>
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Assign Job</h1>
+          </div>
 
+
+          <div class="card shadow mb-4">
+            <div class="card-body">
+              {% if messages %}
+              {% for message in messages %}
+              {% if message.tags == 'error' %}
+              <div id="alert_success" class="alert alert-danger" role="alert">
+                {{message}}
+              </div>
+              {% else %}
+              <div id="alert_success" class="alert alert-success" role="alert">
+                {{message}}
+              </div>
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+
+              <h3 class="text-gray-900">Job id : {{jid}}</h3>
+              <br>
+              <h3 class="text-gray-900">Job Description : </h3>
+              <h3>{{jdesc}}</h3>
+
+              <form method="post">
+                {% csrf_token %}
+
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="njobs">Number of Jobs :</label>
+                    <input type="text" class="form-control" name="njobs"  >
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="instruction">Instruction :</label>
+                    <input type="text" class="form-control" name="instruction"  >
+                  </div>
+                </div>
+                <br>
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="se_time">Expected Start and End Time of Job :</label>
+                    <input type="text" name="se_time" id="dtpicker" class="form-control" >
+                  </div>
+                </div>
+                <br>
+                <div class="form-row">
+
+                  <div class="form-group col-md-12"><label >Select Workers : </label>
+                    {% if wdata %}
+                    <table class="table  h4">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="text-gray-900">Number</th>
+                          <th scope="col" class="text-gray-900">Username</th>
+                          <th scope="col" class="text-gray-900">Worker Name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          {% for i,j in wdata %}
+                          <tr>
+                            <td scope="col" class="text-dark">{{j}}</td>
+                            <td scope="col" class="text-dark">{{i.worker_username}}</td>
+                            <td scope="col" class="text-dark">{{i.worker_realname}}</td>
+                            <td scope="col" class="text-dark">
+                              <input type="checkbox" class="form-control" value="{{j}}" name="{{j}}">
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                  </div>
+
+                <br>
+
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Assign Job</button>
+                </div>
+
+
+              </form>
+
+            </div>
+          </div>
 
       </div>
       <!-- End of Main Content -->
@@ -223,7 +313,21 @@
   <!-- Page level custom scripts -->
   <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>
   <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>
+  <script src="{% static 'moment.min.js'%}"></script>
+  <script src="{% static 'daterangepicker.js'%}"></script>
 
+  <script type="text/javascript">
+    $('#dtpicker').daterangepicker({
+      drops : 'up',
+      timePicker:true,
+      startDate : moment().startOf('hour')  ,
+      endDate : moment().startOf('hour').add(32,'hour'),
+      locale:{
+        format: 'DD/MM/YYYY hh:mm A'
+      },
+
+    });
+  </script>
 
 </body>
 
