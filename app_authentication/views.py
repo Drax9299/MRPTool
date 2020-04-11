@@ -5,6 +5,7 @@ from django.contrib import messages
 import pickle
 import numpy as n
 import math
+from django.http import JsonResponse
 
 # Create your views here.
 def company_login_func(request):
@@ -122,13 +123,13 @@ def worker_login_func(request):
         uname = request.POST['worker_username']
         password = request.POST['worker_password']
         print(uname,password)
-
-        if worker_detail.objects.filter(worker_username = uname , worker_password= password).count() > 0:
+        c_name = request.session['companyuser']
+        if worker_detail.objects.filter(worker_username = uname , worker_password= password , company_username = c_name).count() > 0:
             request.session['workeruser'] = uname.strip()
             cname = worker_detail.objects.get(worker_username = uname)
             request.session['workerrealname'] = cname.worker_realname
             print(cname.worker_realname)
-            return render(request,'workerpage.html',{'msg':cname.worker_realname.upper()})
+            return worker_main_func(request)
         return render(request,'worker_login.html')
     if 'companyuser' in request.session:
         # uname = request.session['companyuser']
@@ -579,7 +580,7 @@ def actual_assign_job_func(request, _jid):
             o.a_start_time = sdate
             o.a_end_time = edate
             o.number_jobs = numberofjobs
-            o.numer_jobs_done = 0
+            o.numer_jobs_done = numberofjobs
             o.instruction = instruction
             o.save()
 
@@ -588,3 +589,44 @@ def actual_assign_job_func(request, _jid):
         return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
 
     return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
+
+def worker_main_func(request):
+    c = request.session['companyuser']
+    w_realname = request.session['workerrealname']
+    w_username = request.session['workeruser']
+    try:
+        jobiddata = job_assign.objects.get(company_username = c,worker_username = w_username)
+        jobid = jobiddata.job_id
+        p = jobiddata.product_username
+        n = jobiddata.numer_jobs_done
+        request.session['productusername'] = p
+        request.session['jobid'] = jobid
+    except job_assign.DoesNotExist:
+        jobid = -1
+    #get attribute Details
+    if(jobid == -1):
+        return render(request,"worker_main.html",{"rname":"NoJob assign"})
+    else:
+        tdata = job_detail.objects.filter(company_username = c , job_id = jobid , product_username = p).order_by('attribute_id')
+        return render(request,"worker_main.html",{"rname":w_realname,"tdata":tdata,"n":n})
+    return render(request,"worker_main.html",{"rname":w_realname})
+
+def worker_main_save_job_api(request):
+    value = request.GET.get('val', 1)
+    c = request.session['companyuser']
+    w = request.session['workeruser']
+    p = request.session['productusername']
+    j = request.session['jobid']
+
+    jobiddata = job_assign.objects.get(company_username = c,worker_username = w,product_username = p,job_id = j);
+    n = jobiddata.numer_jobs_done
+    if(n>0):
+        jobiddata.numer_jobs_done = n - 1
+        jobiddata.save()
+    elif n == 0 :
+        print("Task Done")
+        n = 1
+    data = {
+    'val' : n-1
+    }
+    return JsonResponse(data)
