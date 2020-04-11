@@ -122,11 +122,12 @@ def worker_login_func(request):
     if request.method == 'POST':
         uname = request.POST['worker_username']
         password = request.POST['worker_password']
+        
         print(uname,password)
         c_name = request.session['companyuser']
         if worker_detail.objects.filter(worker_username = uname , worker_password= password , company_username = c_name).count() > 0:
             request.session['workeruser'] = uname.strip()
-            cname = worker_detail.objects.get(worker_username = uname)
+            cname = worker_detail.objects.get(worker_username = uname,company_username = c_name)
             request.session['workerrealname'] = cname.worker_realname
             print(cname.worker_realname)
             return worker_main_func(request)
@@ -626,6 +627,8 @@ def worker_main_save_job_api(request):
     elif n == 0 :
         print("Task Done")
         n = 1
+        #Delete record
+        jobiddata.delete()
     data = {
     'val' : n-1
     }
