@@ -42,5 +42,6 @@ urlpatterns = [
     path('worker_main/',views.worker_main_func,name = 'worker-main'),
     path('save/',views.worker_main_save_job_api,name = 'save-job-api'),
     path('logout_worker/',views.worker_main_logout_api,name='logout-worker-api'),
-    path('quit/',views.worker_main_quit_api,name = 'quit-worker-api')
+    path('quit/',views.worker_main_quit_api,name = 'quit-worker-api'),
+    path('workers_analysis/',views.workers_analysis_func,name ='workers-analysis')
 ]

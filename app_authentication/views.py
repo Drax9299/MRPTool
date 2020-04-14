@@ -703,6 +703,7 @@ def worker_main_save_job_api(request):
                     wdata.efficiency = (old_eff + noverall)/(wdata.tasks_assigned + 1)
                     wdata.tasks_assigned = wdata.tasks_assigned + 1
                     wdata.tasks_done = wdata.tasks_done + 1
+                    wdata.worker_realname = request.session['workerrealname']
                     wdata.save()
                     print("Updated Record")
 
@@ -715,6 +716,7 @@ def worker_main_save_job_api(request):
                     wobj.tasks_done = 1
                     wobj.tasks_assigned = 1
                     wobj.efficiency = noverall
+                    wdata.worker_realname = request.session['workerrealname']
                     wobj.save()
                     print("New Record Saved")
 
@@ -729,6 +731,7 @@ def worker_main_save_job_api(request):
                     old_eff = old_eff * wdata.tasks_assigned
                     wdata.efficiency = (old_eff - 1.0)/(wdata.tasks_assigned + 1)
                     wdata.tasks_assigned = wdata.tasks_assigned + 1
+                    wdata.worker_realname = request.session['workerrealname']
                     wdata.save()
                     print("Updated Record Missed")
 
@@ -741,6 +744,7 @@ def worker_main_save_job_api(request):
                     wobj.tasks_done = 0
                     wobj.tasks_assigned = 1
                     wobj.efficiency = -1.0
+                    wdata.worker_realname = request.session['workerrealname']
                     wobj.save()
                     print("New Record Saved Missed")
         jobiddata.save()
@@ -765,7 +769,6 @@ def worker_main_logout_api(request):
     }
     return JsonResponse(data)
 
-
 def worker_main_quit_api(request):
     c = request.session['companyuser']
     w = request.session['workeruser']
@@ -787,6 +790,7 @@ def worker_main_quit_api(request):
         old_eff = old_eff * wdata.tasks_assigned
         wdata.efficiency = (old_eff - 1.0)/(wdata.tasks_assigned + 1)
         wdata.tasks_assigned = wdata.tasks_assigned + 1
+        wdata.worker_realname = request.session['workerrealname']
         wdata.save()
         print("Updated Record Missed ")
     except worker_data.DoesNotExist:
@@ -798,6 +802,7 @@ def worker_main_quit_api(request):
         wobj.tasks_done = 0
         wobj.tasks_assigned = 1
         wobj.efficiency = -1.0
+        wdata.worker_realname = request.session['workerrealname']
         wobj.save()
         print("New Record Saved Missed")
     jobiddata.delete()
@@ -807,3 +812,8 @@ def worker_main_quit_api(request):
         'emsg' : "Task Aborted"
     }
     return JsonResponse(data)
+
+def workers_analysis_func(request):
+    c = request.session['companyuser']
+    tdata = worker_data.objects.filter(company_username = c).order_by("-efficiency")
+    return render(request,"worker_analysis.html",{"tdata":tdata})

@@ -54,7 +54,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="{% url 'demand-prediction' %}">Demand</a>
-              <a class="collapse-item" href="{% url 'price-prediction' %}">Price</a>
+              <a class="collapse-item" href="">Price</a>
           </div>
         </div>
       </li>
@@ -72,16 +72,6 @@
         <a class="nav-link" href="{% url 'create-job' %}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Create Job</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'assign-job' %}">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Assign Task</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'workers-analysis' %}">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Workers Analysis</span></a>
       </li>
 
 
@@ -172,7 +162,38 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+          <br>
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Workers Sorted According to Efficiency</h1>
+          </div>
 
+
+          <div class="card shadow mb-4">
+            <div class="card-body">
+              <table class="table table-borderless h4">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-gray-900">Worker Id</th>
+                    <th scope="col" class="text-gray-900">Worker Name</th>
+                    <th scope="col" class="text-gray-900">Jobs Done/Assigned</th>
+                    <th scope="col" class="text-gray-900">Task Done/Assigned</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {% for i in tdata %}
+                    <tr>
+                      <td scope="col" class="text-dark">{{i.worker_username}}</td>
+                      <td scope="col" class="text-dark">{{i.worker_realname}}</td>
+                      <td scope="col" class="text-dark">{{i.jobs_done}} / {{i.jobs_assigned}}</td>
+                      <td scope="col" class="text-dark">{{i.tasks_done}} / {{i.tasks_assigned}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
 
       </div>
       <!-- End of Main Content -->

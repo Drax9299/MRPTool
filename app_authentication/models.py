@@ -102,6 +102,7 @@ class job_assign(models.Model):
 class worker_data(models.Model):
     company_username = models.CharField(max_length=20)
     worker_username = models.CharField(max_length=20)
+    worker_realname = models.CharField(max_length=50)
     jobs_done = models.PositiveIntegerField()
     jobs_assigned = models.PositiveIntegerField()
     efficiency = models.FloatField()
