@@ -40,5 +40,7 @@ urlpatterns = [
     path('assign_job/',views.assign_job_func,name='assign-job'),
     path('actual_assign_job/<str:_jid>/',views.actual_assign_job_func,name = 'actual-assign-job'),
     path('worker_main/',views.worker_main_func,name = 'worker-main'),
-    path('save/',views.worker_main_save_job_api,name = 'save-job-api')
+    path('save/',views.worker_main_save_job_api,name = 'save-job-api'),
+    path('logout_worker/',views.worker_main_logout_api,name='logout-worker-api'),
+    path('quit/',views.worker_main_quit_api,name = 'quit-worker-api')
 ]

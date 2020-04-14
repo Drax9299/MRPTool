@@ -1,10 +1,11 @@
 from django.shortcuts import render,redirect
-from . models import company_detail,admin_detail,worker_detail,product_detail,attribute_product,history_sales_data,job_detail,all_jobs,job_assign
+from . models import company_detail,admin_detail,worker_detail,product_detail,attribute_product,history_sales_data,job_detail,all_jobs,job_assign,worker_data
 from datetime import datetime
 from django.contrib import messages
 import pickle
 import numpy as n
 import math
+import pytz
 from django.http import JsonResponse
 
 # Create your views here.
@@ -122,7 +123,7 @@ def worker_login_func(request):
     if request.method == 'POST':
         uname = request.POST['worker_username']
         password = request.POST['worker_password']
-        
+
         print(uname,password)
         c_name = request.session['companyuser']
         if worker_detail.objects.filter(worker_username = uname , worker_password= password , company_username = c_name).count() > 0:
@@ -582,6 +583,7 @@ def actual_assign_job_func(request, _jid):
             o.a_end_time = edate
             o.number_jobs = numberofjobs
             o.numer_jobs_done = numberofjobs
+            o.missed_jobs = 0
             o.instruction = instruction
             o.save()
 
@@ -595,6 +597,8 @@ def worker_main_func(request):
     c = request.session['companyuser']
     w_realname = request.session['workerrealname']
     w_username = request.session['workeruser']
+    if request.session['workeruser'] == None:
+        return worker_login_func(request)
     try:
         jobiddata = job_assign.objects.get(company_username = c,worker_username = w_username)
         jobid = jobiddata.job_id
@@ -606,30 +610,200 @@ def worker_main_func(request):
         jobid = -1
     #get attribute Details
     if(jobid == -1):
-        return render(request,"worker_main.html",{"rname":"NoJob assign"})
+        messages.error(request,"No Jobs Assigned")
+        return render(request,"worker_main.html",{"rname":w_realname})
     else:
         tdata = job_detail.objects.filter(company_username = c , job_id = jobid , product_username = p).order_by('attribute_id')
         return render(request,"worker_main.html",{"rname":w_realname,"tdata":tdata,"n":n})
     return render(request,"worker_main.html",{"rname":w_realname})
 
 def worker_main_save_job_api(request):
+    utc = pytz.UTC
     value = request.GET.get('val', 1)
     c = request.session['companyuser']
     w = request.session['workeruser']
     p = request.session['productusername']
     j = request.session['jobid']
 
-    jobiddata = job_assign.objects.get(company_username = c,worker_username = w,product_username = p,job_id = j);
+    try:
+        jobiddata = job_assign.objects.get(company_username = c,worker_username = w,product_username = p,job_id = j);
+    except:
+        messages.error(request,"No Jobs Assigned")
+        return render(request,'worker_main.html')
     n = jobiddata.numer_jobs_done
+    exceed_flag = 0
     if(n>0):
         jobiddata.numer_jobs_done = n - 1
+        #Update inventory
+        jobdetail = job_detail.objects.filter(company_username = c,product_username = p , job_id = j).only('attribute_id','attribute_required_quantity')
+        for i in jobdetail:
+            aobj = attribute_product.objects.get(company_username = c, product_username = p ,attribute_id= i.attribute_id)
+            quantity = aobj.attribute_current_quantity - i.attribute_required_quantity
+            if quantity <= 0 :
+
+                data = {
+                'val' : n,
+                'emsg' : "Inventory Empty!"
+                }
+                return JsonResponse(data)
+
+            aobj.attribute_current_quantity = quantity
+            aobj.save()
+        #check date exceeds
+        t = datetime.now()
+        t = utc.localize(t)
+
+        if t > jobiddata.e_end_time:
+            exceed_flag = 1
+            temp = jobiddata.missed_jobs
+            jobiddata.missed_jobs = temp + 1
+        if (jobiddata.number_jobs) == n :
+            #Start time
+            st = datetime.now().replace(second=0,microsecond=0)
+            st = utc.localize(st)
+            jobiddata.a_start_time = st
+            print("Time ",st)
+        elif (n-1) == 0:
+            #Calculate eff
+            #End time
+            et = datetime.now().replace(second=0,microsecond=0)
+            et = utc.localize(et)
+            print("End Time ",et)
+            jobiddata.a_end_time = et
+
+            done_jobs = jobiddata.missed_jobs
+            done_jobs = jobiddata.number_jobs - jobiddata.missed_jobs
+            #Calc normal efficiency
+            if exceed_flag == 0:
+                nlabor = 0.0
+                nproduction = 0.0
+                noverall = 0.0
+                nproduction = done_jobs / jobiddata.number_jobs
+                print("NPRod",nproduction)
+                e_diff = jobiddata.e_end_time - jobiddata.e_start_time
+                e_sec = e_diff.total_seconds()/60
+                print("Expected slice: ",e_sec)
+                a_diff = et - jobiddata.a_start_time
+                a_sec = a_diff.total_seconds()/60
+                print("Actual Slice: ",a_sec)
+                if a_sec == e_sec:
+                    nlabor = 0.1
+                else:
+                    nlabor = 1 - (a_sec/e_sec)
+                print("Nlabor",nlabor)
+                noverall = nproduction * nlabor
+                print(noverall)
+                #Check if record in worker data
+                try:
+                    wdata = worker_data.objects.get(worker_username = w,company_username = c)
+                    wdata.jobs_done = wdata.jobs_done +done_jobs
+                    wdata.jobs_assigned = wdata.jobs_assigned + jobiddata.number_jobs
+                    old_eff = wdata.efficiency
+                    old_eff = old_eff * wdata.tasks_assigned
+                    wdata.efficiency = (old_eff + noverall)/(wdata.tasks_assigned + 1)
+                    wdata.tasks_assigned = wdata.tasks_assigned + 1
+                    wdata.tasks_done = wdata.tasks_done + 1
+                    wdata.save()
+                    print("Updated Record")
+
+                except worker_data.DoesNotExist:
+                    wobj = worker_data()
+                    wobj.worker_username = w
+                    wobj.company_username = c
+                    wobj.jobs_done = done_jobs
+                    wobj.jobs_assigned = jobiddata.number_jobs
+                    wobj.tasks_done = 1
+                    wobj.tasks_assigned = 1
+                    wobj.efficiency = noverall
+                    wobj.save()
+                    print("New Record Saved")
+
+            #Missed job efficiency
+            if exceed_flag == 1:
+                #Missed some jobs
+                try:
+                    wdata = worker_data.objects.get(worker_username = w,company_username = c)
+                    wdata.jobs_done = wdata.jobs_done + done_jobs
+                    wdata.jobs_assigned = wdata.jobs_assigned + jobiddata.number_jobs
+                    old_eff = wdata.efficiency
+                    old_eff = old_eff * wdata.tasks_assigned
+                    wdata.efficiency = (old_eff - 1.0)/(wdata.tasks_assigned + 1)
+                    wdata.tasks_assigned = wdata.tasks_assigned + 1
+                    wdata.save()
+                    print("Updated Record Missed")
+
+                except worker_data.DoesNotExist:
+                    wobj = worker_data()
+                    wobj.worker_username = w
+                    wobj.company_username = c
+                    wobj.jobs_done = done_jobs
+                    wobj.jobs_assigned = jobiddata.number_jobs
+                    wobj.tasks_done = 0
+                    wobj.tasks_assigned = 1
+                    wobj.efficiency = -1.0
+                    wobj.save()
+                    print("New Record Saved Missed")
         jobiddata.save()
+
     elif n == 0 :
         print("Task Done")
-        n = 1
+        n= 1
         #Delete record
         jobiddata.delete()
+
     data = {
-    'val' : n-1
+    'val' : n-1,
+    'emsg' : ""
+    }
+    return JsonResponse(data)
+
+def worker_main_logout_api(request):
+    request.session['workeruser'] = None
+    print("ansdnk")
+    data = {
+    'status':1,
+    }
+    return JsonResponse(data)
+
+
+def worker_main_quit_api(request):
+    c = request.session['companyuser']
+    w = request.session['workeruser']
+    p = request.session['productusername']
+    j = request.session['jobid']
+
+    try:
+        jobiddata = job_assign.objects.get(company_username = c,worker_username = w,product_username = p,job_id = j);
+    except job_assign.DoesNotExist:
+        messages.error(request,"No Jobs Assigned")
+        return render(request,'worker_main.html')
+
+    done_jobs = jobiddata.number_jobs - jobiddata.numer_jobs_done
+    try:
+        wdata = worker_data.objects.get(worker_username = w,company_username = c)
+        wdata.jobs_done = wdata.jobs_done + done_jobs
+        wdata.jobs_assigned = wdata.jobs_assigned + jobiddata.number_jobs
+        old_eff = wdata.efficiency
+        old_eff = old_eff * wdata.tasks_assigned
+        wdata.efficiency = (old_eff - 1.0)/(wdata.tasks_assigned + 1)
+        wdata.tasks_assigned = wdata.tasks_assigned + 1
+        wdata.save()
+        print("Updated Record Missed ")
+    except worker_data.DoesNotExist:
+        wobj = worker_data()
+        wobj.worker_username = w
+        wobj.company_username = c
+        wobj.jobs_done = done_jobs
+        wobj.jobs_assigned = jobiddata.number_jobs
+        wobj.tasks_done = 0
+        wobj.tasks_assigned = 1
+        wobj.efficiency = -1.0
+        wobj.save()
+        print("New Record Saved Missed")
+    jobiddata.delete()
+    print("Zala")
+    data = {
+        'val' : 0,
+        'emsg' : "Task Aborted"
     }
     return JsonResponse(data)

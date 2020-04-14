@@ -27,10 +27,10 @@
     <!-- Navbar content -->
     <span class="navbar-brand mb-1 h6 text-white ">Welcome , {{rname}}</span>
 
-    <form class="form-inline my-2 my-lg-0">
-      <button class="btn btn-danger mr-sm-2" > Quit </button>
-      <button class="btn btn-success my-2 my-sm-0" >Logout</button>
-    </form>
+    <div class="form-inline my-2 my-lg-0">
+      <button class="btn btn-danger mr-sm-2" id="quitid" onclick="quit()" > Quit </button>
+      <button class="btn btn-success my-2 my-sm-0" id="logoutid" onclick="logout()">Logout</button>
+    </div>
     </nav>
   </div>
   <br>
@@ -41,7 +41,9 @@
   <br>
   <div class="container-fluid">
     <div class="card shadow">
-      <div class="card-body">
+
+
+
         {% if tdata %}
         <table class="table h4  ">
           <thead>
@@ -65,9 +67,22 @@
         {% endif %}
       </div>
     </div>
-
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <div id="alert_success" class="alert alert-danger" role="alert">
+      {{message}}
+    </div>
+    {% else %}
+    <div id="alert_success" class="alert alert-success" role="alert">
+      {{message}}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
   </div>
 <br>
+  <h1 id="error" class="text-danger text-center">{{emsg}}</h1>
   <footer class="page-footer">
     <div class="text-center  ">
       <button class="btn btn-success btn-lg" type="button" id="savebtn" onclick="saveJob()">Save</button>
@@ -85,7 +100,6 @@
 
   <script>
     function saveJob(){
-      console.log("1");
       $.ajax({
          url: '{% url "save-job-api" %}',
          data: {
@@ -94,11 +108,38 @@
          dataType: 'json',
          success: function (data) {
               document.getElementById('rjob').innerHTML = data.val;
+              document.getElementById('error').innerHTML = data.emsg;
          }
        });
     }
 
+    function logout(){
+      $.ajax({
+         url: '{% url "logout-worker-api" %}',
+         data: {
+           'val': 1
+         },
+         dataType: 'json',
+         success: function(data){
+           console.log(data.val)
+           window.location.replace("{% url 'worker_login' %}")
+         }
+       });
+    }
 
+    function quit(){
+      $.ajax({
+         url: '{% url "quit-worker-api" %}',
+         data: {
+           'val': 1
+         },
+         dataType: 'json',
+         success: function (data) {
+              document.getElementById('rjob').innerHTML = data.val;
+              document.getElementById('error').innerHTML = data.emsg;
+         }
+       });
+    }
 
   </script>
 

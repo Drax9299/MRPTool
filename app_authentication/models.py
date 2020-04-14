@@ -94,6 +94,19 @@ class job_assign(models.Model):
     number_jobs = models.SmallIntegerField()
     numer_jobs_done = models.SmallIntegerField()
     instruction = models.CharField(max_length = 50)
+    missed_jobs = models.SmallIntegerField()
 
     class Meta:
         db_table = 'job_assign'
+
+class worker_data(models.Model):
+    company_username = models.CharField(max_length=20)
+    worker_username = models.CharField(max_length=20)
+    jobs_done = models.PositiveIntegerField()
+    jobs_assigned = models.PositiveIntegerField()
+    efficiency = models.FloatField()
+    tasks_done = models.PositiveIntegerField()
+    tasks_assigned = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'worker_data'
