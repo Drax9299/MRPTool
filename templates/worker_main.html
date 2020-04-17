@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Admin Login</title>
+  <title>Worker </title>
   {% load static %}
   <!-- Custom fonts for this template-->
   <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -33,6 +33,7 @@
     </div>
     </nav>
   </div>
+
   <br>
   <h4 class="text-center text-white">Remaining jobs:</h4>
   <div class="text-center h1">
@@ -65,21 +66,25 @@
             </tbody>
         </table>
         {% endif %}
+        <div class="h4">
+          Desc : {{inst}}
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div id="alert_success" class="alert alert-danger" role="alert">
+          {{message}}
+        </div>
+        {% else %}
+        <div id="alert_success" class="alert alert-success" role="alert">
+          {{message}}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
       </div>
     </div>
-    {% if messages %}
-    {% for message in messages %}
-    {% if message.tags == 'error' %}
-    <div id="alert_success" class="alert alert-danger" role="alert">
-      {{message}}
-    </div>
-    {% else %}
-    <div id="alert_success" class="alert alert-success" role="alert">
-      {{message}}
-    </div>
-    {% endif %}
-    {% endfor %}
-    {% endif %}
+
   </div>
 <br>
   <h1 id="error" class="text-danger text-center">{{emsg}}</h1>

@@ -614,6 +614,7 @@ def worker_main_func(request):
     c = request.session['companyuser']
     w_realname = request.session['workerrealname']
     w_username = request.session['workeruser']
+
     if request.session['workeruser'] == None:
         return worker_login_func(request)
     try:
@@ -621,17 +622,19 @@ def worker_main_func(request):
         jobid = jobiddata.job_id
         p = jobiddata.product_username
         n = jobiddata.numer_jobs_done
+        inst = jobiddata.instruction
         request.session['productusername'] = p
         request.session['jobid'] = jobid
     except job_assign.DoesNotExist:
         jobid = -1
+
     #get attribute Details
     if(jobid == -1):
         messages.error(request,"No Jobs Assigned")
         return render(request,"worker_main.html",{"rname":w_realname})
     else:
         tdata = job_detail.objects.filter(company_username = c , job_id = jobid , product_username = p).order_by('attribute_id')
-        return render(request,"worker_main.html",{"rname":w_realname,"tdata":tdata,"n":n})
+        return render(request,"worker_main.html",{"rname":w_realname,"tdata":tdata,"n":n,"inst":inst})
     return render(request,"worker_main.html",{"rname":w_realname})
 
 def worker_main_save_job_api(request):
