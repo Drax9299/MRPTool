@@ -174,10 +174,15 @@ def worker_register_func(request):
 
 def product_selection_func(request):
     compname = request.session['companyuser']
-    dat = product_detail.objects.filter(company_username = compname)
+    try:
+        dat = product_detail.objects.filter(company_username = compname)
+    except product_detail.DoesNotExist:
+        print("Dow noooooooooooooooooo ")
+        return render(request,'productselection.html')
     return render(request,'productselection.html',{'data':dat})
 
-def dashboard_func(request , pname ):
+
+def dashboard_func(request , pname = '***' ):
     request.session['productuname'] = pname
     p = product_detail.objects.get(company_username = request.session['companyuser'],product_username=pname)
     request.session['productrealname'] = p.product_realname
@@ -190,6 +195,17 @@ def create_product_func(request):
             l.append(k)
         l = l[1:]
 
+        if l[0].strip() == "" or l[1].strip() == "" :
+            messages.error(request,"Invalid Input")
+            return render(request,'create_product.html')
+        for i in range(3,len(l),3):
+            if l[i].strip() == "" or l[i+1].strip() =="" or l[i+2].strip() =="":
+                messages.error(request,"Invalid Input")
+                return render(request,'create_product.html')
+            if l[i+1].isdigit() == False or l[i+2] == False:
+                messages.error(request,"Invalid Input")
+                return render(request,'create_product.html')
+
         c = product_detail()
         c.company_username = request.session['companyuser']
         c.product_username = l[0].strip()
@@ -199,6 +215,7 @@ def create_product_func(request):
 
         id = 1
         for i in range(3,len(l),3):
+
             e = attribute_product()
             e.company_username = request.session['companyuser']
             e.product_username = l[0].strip()

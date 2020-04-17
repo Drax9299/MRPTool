@@ -39,10 +39,12 @@
                   <div class="text-center">
                     <h5 class="h5 text-gray-900 mb-4">Select a Product</h5>
                   </div>
+                  {% if data %}
                   {% for i in data %}
-                    <a href="{% url 'dashboard' i.product_username %}" style="color:#f44336;" class="h4 col-md-6">{{i.product_realname}}</a>
+                    <a href="{% url 'dashboard' i.product_username  %}" style="color:#f44336;" class="h4 col-md-6">{{i.product_realname}}</a>
                     <br>
                   {% endfor %}
+                  {% endif %}
                   <hr>
                   <a href="{% url 'create-product' %}" class="btn btn-primary ">
                   Create a New Product <i class="fas fa-plus"></i> </a>

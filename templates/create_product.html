@@ -40,15 +40,28 @@
                   <div class="text-center">
                     <h5 class="h5 text-gray-900 mb-4">Create a Product</h5>
                   </div>
+                  {% if messages %}
+                  {% for message in messages %}
+                  {% if message.tags == 'error' %}
+                  <div id="alert_success" class="alert alert-danger" role="alert">
+                    {{message}}
+                  </div>
+                  {% else %}
+                  <div id="alert_success" class="alert alert-success" role="alert">
+                    {{message}}
+                  </div>
+                  {% endif %}
+                  {% endfor %}
+                  {% endif %}
                   <form  method="post">
                     {% csrf_token %}
                     <div class="form-group">
                       <label for="" class="text-gray-900">Product Username</label>
-                      <input type="text" class="form-control form-control-user" name="product_username" aria-describedby="emailHelp" placeholder="Enter Product Username ">
+                      <input required type="text" class="form-control form-control-user" name="product_username" aria-describedby="emailHelp" placeholder="Enter Product Username ">
                     </div>
                     <div class="form-group">
                       <label class="text-gray-900">Product Real Name</label>
-                      <input type="text" class="form-control form-control-user" name="product_realname" aria-describedby="emailHelp" placeholder="Enter Product Real Name">
+                      <input required type="text" class="form-control form-control-user" name="product_realname" aria-describedby="emailHelp" placeholder="Enter Product Real Name">
                     </div>
                     <div class="form-group">
                       <label class="text-gray-900">Product Description</label>
@@ -59,13 +72,13 @@
                       <div class="form-row" id="row1">
                         <label class="text-success col-form-label">1</label>
                         <div class="col-5">
-                          <input type="text" class=" form-control form-control-user" name="attr1_name" placeholder="Attribute Name">
+                          <input required type="text" class=" form-control form-control-user" name="attr1_name" placeholder="Attribute Name">
                         </div>
                         <div class="col">
-                          <input type="text" class=" form-control form-control-user" name="attr1_rquantity" placeholder="Required Quantity">
+                          <input required type="text" class=" form-control form-control-user" name="attr1_rquantity" placeholder="Required Quantity">
                         </div>
                         <div class="col">
-                          <input type="text" class=" form-control form-control-user" name="attr1_cquantity" placeholder="Current Quantity">
+                          <input required type="text" class=" form-control form-control-user" name="attr1_cquantity" placeholder="Current Quantity">
                         </div>
                       </div>
                     </div>
@@ -121,17 +134,17 @@
         newTextBoxDiv.after().html('<label class="text-success col-form-label">'+counter+'</label>');
         var divofattrn = $(document.createElement('div'));
         divofattrn.addClass("col-5");
-        divofattrn.after().html('<input type="text" class=" form-control form-control-user" name="attr'+counter+'_name" placeholder="Attribute Name">');
+        divofattrn.after().html('<input required type="text" class=" form-control form-control-user" name="attr'+counter+'_name" placeholder="Attribute Name">');
         divofattrn.appendTo(newTextBoxDiv);
 
         var divofattrn = $(document.createElement('div'));
         divofattrn.addClass("col");
-        divofattrn.after().html('<input type="text" class=" form-control form-control-user" name="attr'+counter+'_rquantity" placeholder="Required Quantity">');
+        divofattrn.after().html('<input required type="text" class=" form-control form-control-user" name="attr'+counter+'_rquantity" placeholder="Required Quantity">');
         divofattrn.appendTo(newTextBoxDiv);
 
         var divofattrn = $(document.createElement('div'));
         divofattrn.addClass("col");
-        divofattrn.after().html('<input type="text" class=" form-control form-control-user" name="attr'+counter+'_cquantity" placeholder="Current Quantity">');
+        divofattrn.after().html('<input Required type="text" class=" form-control form-control-user" name="attr'+counter+'_cquantity" placeholder="Current Quantity">');
         divofattrn.appendTo(newTextBoxDiv);
 
         newTextBoxDiv.appendTo("#groupofboxes");
