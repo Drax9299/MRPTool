@@ -587,6 +587,9 @@ def actual_assign_job_func(request, _jid):
             if k == temp:
                 workerslist.append(i.worker_username)
         print(workerslist)
+        if len(workerslist) == 0:
+            messages.error(request,"No Worker Selected")
+            return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
 
         for i in workerslist:
             o = job_assign()
@@ -605,9 +608,9 @@ def actual_assign_job_func(request, _jid):
             o.save()
 
 
-        messages.success(request,"Job Assigned Successfully")
-        return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
-
+        #messages.success(request,"Job Assigned Successfully! Please Refresh the page")
+        return assign_job_func(request)
+        #return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
     return render(request,'actual_assign_job.html',{"jid":_jid,"jdesc":jdesc,"wdata":wdata1})
 
 def worker_main_func(request):
@@ -772,7 +775,7 @@ def worker_main_save_job_api(request):
                     print("New Record Saved Missed")
         jobiddata.save()
 
-    elif n == 0 :
+    if n == 1 :
         print("Task Done")
         n= 1
         #Delete record
