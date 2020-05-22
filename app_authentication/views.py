@@ -634,7 +634,10 @@ def worker_main_func(request):
         return render(request,"worker_main.html",{"rname":w_realname})
     else:
         tdata = job_detail.objects.filter(company_username = c , job_id = jobid , product_username = p).order_by('attribute_id')
-        return render(request,"worker_main.html",{"rname":w_realname,"tdata":tdata,"n":n,"inst":inst})
+        expdate = job_assign.objects.get(company_username = c , job_id = jobid , product_username = p , worker_username = w_username)
+        edate = expdate.e_end_time
+        ed = datetime.strftime(edate,'%d/%m/%Y %I:%M %p')
+        return render(request,"worker_main.html",{"rname":w_realname,"tdata":tdata,"n":n,"inst":inst,"ed":ed})
     return render(request,"worker_main.html",{"rname":w_realname})
 
 def worker_main_save_job_api(request):
